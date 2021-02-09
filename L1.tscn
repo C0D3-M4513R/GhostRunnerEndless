@@ -1,0 +1,196 @@
+[gd_scene load_steps=12 format=2]
+
+[ext_resource path="res://block_shader.tres" type="Material" id=1]
+[ext_resource path="res://Player.gd" type="Script" id=2]
+[ext_resource path="res://player.tres" type="Shape" id=3]
+[ext_resource path="res://plane_shader.tres" type="Material" id=4]
+[ext_resource path="res://block_col.tres" type="Shape" id=5]
+
+[sub_resource type="GDScript" id=1]
+script/source = "extends Spatial
+
+
+# Declare member variables here. Examples:
+# var a = 2
+# var b = \"text\"
+
+
+# Called when the node enters the scene tree for the first time.
+func _ready():
+	pass # Replace with function body.
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+#func _process(delta):
+#	pass
+"
+
+[sub_resource type="SpatialMaterial" id=2]
+albedo_color = Color( 0.0315, 0, 0.21, 1 )
+
+[sub_resource type="CubeMesh" id=3]
+material = SubResource( 2 )
+
+[sub_resource type="CubeMesh" id=4]
+material = ExtResource( 4 )
+
+[sub_resource type="BoxShape" id=5]
+extents = Vector3( 0.25, 1, 0.25 )
+
+[sub_resource type="CubeMesh" id=6]
+material = ExtResource( 1 )
+
+[node name="root" type="Spatial"]
+script = SubResource( 1 )
+
+[node name="OmniLight" type="OmniLight" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 57.6923, 0 )
+light_energy = 4.2
+omni_range = 75.3475
+
+[node name="Player" type="KinematicBody" parent="."]
+transform = Transform( -1.62921e-07, 0, 1, 0, 1, 0, -1, 0, -1.62921e-07, -0.00463104, 4.43673, 0.0248613 )
+script = ExtResource( 2 )
+
+[node name="CollisionShape" type="CollisionShape" parent="Player"]
+shape = ExtResource( 3 )
+
+[node name="Rotation_Helper_X" type="Spatial" parent="Player"]
+
+[node name="Rotation_Helper_Z" type="Spatial" parent="Player/Rotation_Helper_X"]
+
+[node name="Camera" type="Camera" parent="Player/Rotation_Helper_X/Rotation_Helper_Z"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0362354, 1.29867, -0.251841 )
+doppler_tracking = 1
+current = true
+fov = 100.0
+
+[node name="Model" type="Spatial" parent="Player/Rotation_Helper_X/Rotation_Helper_Z"]
+
+[node name="MeshInstance" type="MeshInstance" parent="Player/Rotation_Helper_X/Rotation_Helper_Z/Model"]
+transform = Transform( 1, 0, 0, 0, 2, 0, 0, 0, 1, 0, 0, 0 )
+mesh = SubResource( 3 )
+material/0 = null
+
+[node name="StaticBody" type="StaticBody" parent="."]
+transform = Transform( 24, 0, 0, 0, 1, 0, 0, 0, 24, -10, -1, 0 )
+
+[node name="MeshInstance" type="MeshInstance" parent="StaticBody"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.00020954, 0, 4.1917e-05 )
+mesh = SubResource( 4 )
+material/0 = null
+
+[node name="CollisionShape" type="CollisionShape" parent="StaticBody"]
+transform = Transform( 4, 0, 0, 0, 1, 0, 0, 0, 4, 0, 0, 0 )
+shape = SubResource( 5 )
+
+[node name="RespawnPoint" type="Spatial" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0543106, 6.72792, -0.0289905 )
+
+[node name="Wallrun" type="Spatial" parent="."]
+
+[node name="block" type="StaticBody" parent="Wallrun" groups=[
+"wallunnable",
+]]
+transform = Transform( 8, 0, 0, 0, 4, 0, 0, 0, 1, -10, 6, 10 )
+
+[node name="CollisionShape" type="CollisionShape" parent="Wallrun/block"]
+shape = ExtResource( 5 )
+
+[node name="MeshInstance" type="MeshInstance" parent="Wallrun/block"]
+mesh = SubResource( 6 )
+material/0 = null
+
+[node name="block2" type="StaticBody" parent="Wallrun" groups=[
+"wallunnable",
+]]
+transform = Transform( 8, 0, 0, 0, 4, 0, 0, 0, 1, -28.8713, 6, -4.94026 )
+
+[node name="MeshInstance" type="MeshInstance" parent="Wallrun/block2"]
+mesh = SubResource( 6 )
+material/0 = null
+
+[node name="CollisionShape" type="CollisionShape" parent="Wallrun/block2"]
+shape = ExtResource( 5 )
+
+[node name="block3" type="StaticBody" parent="Wallrun" groups=[
+"wallunnable",
+]]
+transform = Transform( 8, 0, 0, 0, 4, 0, 0, 0, 1, -47.9371, 6, 10 )
+
+[node name="CollisionShape" type="CollisionShape" parent="Wallrun/block3"]
+shape = ExtResource( 5 )
+
+[node name="MeshInstance" type="MeshInstance" parent="Wallrun/block3"]
+mesh = SubResource( 6 )
+material/0 = null
+
+[node name="block4" type="StaticBody" parent="Wallrun" groups=[
+"wallunnable",
+]]
+transform = Transform( 8, 0, 0, 0, 4, 0, 0, 0, 1, -69.3072, 6, -3.69765 )
+
+[node name="MeshInstance" type="MeshInstance" parent="Wallrun/block4"]
+mesh = SubResource( 6 )
+material/0 = null
+
+[node name="CollisionShape" type="CollisionShape" parent="Wallrun/block4"]
+shape = ExtResource( 5 )
+
+[node name="block5" type="StaticBody" parent="Wallrun" groups=[
+"wallunnable",
+]]
+transform = Transform( 8, 0, 0, 0, 4, 0, 0, 0, 1, -96.7742, 6, 10.3237 )
+
+[node name="CollisionShape" type="CollisionShape" parent="Wallrun/block5"]
+shape = ExtResource( 5 )
+
+[node name="MeshInstance" type="MeshInstance" parent="Wallrun/block5"]
+mesh = SubResource( 6 )
+material/0 = null
+
+[node name="block6" type="StaticBody" parent="Wallrun" groups=[
+"wallunnable",
+]]
+transform = Transform( 8, 0, 0, 0, 4, 0, 0, 0, 1, -115.313, 6, -4.99464 )
+
+[node name="MeshInstance" type="MeshInstance" parent="Wallrun/block6"]
+mesh = SubResource( 6 )
+material/0 = null
+
+[node name="CollisionShape" type="CollisionShape" parent="Wallrun/block6"]
+shape = ExtResource( 5 )
+
+[node name="block7" type="StaticBody" parent="Wallrun" groups=[
+"wallunnable",
+]]
+transform = Transform( 8, 0, 0, 0, 4, 0, 0, 0, 1, -141.288, 6, 10 )
+
+[node name="CollisionShape" type="CollisionShape" parent="Wallrun/block7"]
+shape = ExtResource( 5 )
+
+[node name="MeshInstance" type="MeshInstance" parent="Wallrun/block7"]
+mesh = SubResource( 6 )
+material/0 = null
+
+[node name="UI" type="Node" parent="."]
+
+[node name="jumpCounter" type="Label" parent="UI"]
+modulate = Color( 0, 0, 0, 1 )
+self_modulate = Color( 0, 0, 0, 1 )
+margin_right = 81.0
+margin_bottom = 14.0
+text = "Jump Count: "
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="wallrunOrAir" type="Label" parent="UI"]
+modulate = Color( 0, 0, 0, 1 )
+self_modulate = Color( 0, 0, 0, 1 )
+margin_top = 18.652
+margin_right = 40.0
+margin_bottom = 32.652
+text = "Wallrun or in Air:"
+__meta__ = {
+"_edit_use_anchors_": false
+}
