@@ -1,26 +1,34 @@
 class_name Player extends KinematicBody
 
-var wallrunOrInAir :bool = false
+
 const GRAVITY:float = -24.8*2
 var vel := Vector3()
 const MAX_SPEED:int = 16
 const JUMP_SPEED :int= 16
 const ACCEL :int= 4
+const DEACCEL:int = 16
+const MAX_SLOPE_ANGLE:int = 40
 
-const WALLRUN_HORIZONTAL_SPEED :int=100
-const HORIZONTAL_SPEED_GROUND :int =1
-var walkingSpeed:int = 1
+#Changabale settings
+export var HORIZONTAL_SPEED_WALLRUN :int=2
+export var HORIZONTAL_SPEED_GROUND :int =1
 
-const JUMP_COUNTER_AFTER_WALLRUN:int=1
-var jump_counter:int=0
+export var JUMP_COUNTER_AFTER_WALLRUN:int =2
 
+#No setting
+const Wallrun=preload("res://wallrun.gd")
 var wallrun_processor:Wallrun
 const WALLRUN_DEN:float = 2.0
 
+#Dynamically changing
+var walkingSpeed:int = 1
+var wallrunOrInAir :bool = false
+var jump_counter:int=0
+
+
+
 var dir := Vector3()
 
-const DEACCEL:int = 16
-const MAX_SLOPE_ANGLE:int = 40
 
 var camera:Camera
 var rotation_helperx:Spatial
@@ -28,6 +36,7 @@ var rotation_helperz:Spatial
 var respawnAnchor:Spatial
 var jumpCounter:Label
 var wallrunOrInAirLabel:Label
+var settings:Control
 
 var MOUSE_SENSITIVITY:float = 0.1
 
@@ -35,9 +44,11 @@ func _ready()->void:
 	camera = $Rotation_Helper_X/Rotation_Helper_Z/Camera
 	rotation_helperx = $Rotation_Helper_X
 	rotation_helperz = $Rotation_Helper_X/Rotation_Helper_Z
-	respawnAnchor = get_node("../RespawnPoint")
-	jumpCounter=get_node("../UI/jumpCounter")
-	wallrunOrInAirLabel=get_node("../UI/wallrunOrAir")
+	respawnAnchor = get_node("/root/root/RespawnPoint")
+	jumpCounter=get_node("/root/root/UI/jumpCounter")
+	wallrunOrInAirLabel=get_node("/root/root/UI/wallrunOrAir")
+	settings=get_node("/root/root/UI/Settings")
+	settings.hide()
 
 	wallrun_processor=Wallrun.new()
 	wallrun_processor.set_func_is_on_wall(funcref(self,"is_only_on_wall"))
@@ -97,7 +108,7 @@ func process_input(delta):
 	# ----------------------------------
 	# Walking
 	if wallrunOrInAir:
-		walkingSpeed = WALLRUN_HORIZONTAL_SPEED
+		walkingSpeed = HORIZONTAL_SPEED_WALLRUN
 	elif is_on_floor():
 		walkingSpeed = HORIZONTAL_SPEED_GROUND
 	
@@ -114,9 +125,9 @@ func process_input(delta):
 		input_movement_vector.x -= walkingSpeed
 	if Input.is_action_pressed("movement_right"):
 		input_movement_vector.x += walkingSpeed
-
+	
 	input_movement_vector = input_movement_vector.normalized()
-
+	
 	# Basis vectors are already normalized.
 	dir += -cam_xform.basis.z * input_movement_vector.y
 	dir += cam_xform.basis.x * input_movement_vector.x
@@ -128,8 +139,12 @@ func process_input(delta):
 	if Input.is_action_just_pressed("ui_cancel"):
 		if Input.get_mouse_mode() == Input.MOUSE_MODE_VISIBLE:
 			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+			settings.hide()
 		else:
 			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+			settings.show()
+
+			
 	# ----------------------------------
 
 func process_movement(delta):
@@ -149,6 +164,8 @@ func process_movement(delta):
 
 	var target := dir
 	target *= MAX_SPEED
+	if wallrunOrInAir:
+		target*=HORIZONTAL_SPEED_WALLRUN
 
 	var accel:int
 	if dir.dot(hvel) > 0:

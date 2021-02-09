@@ -1,5 +1,3 @@
-class_name Wallrun
-
 const TIMEOUT:int=25
 var timeout:int=0
 
