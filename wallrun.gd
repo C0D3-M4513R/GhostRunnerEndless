@@ -1,7 +1,7 @@
+extends Spatial
 class_name Wallrun
 
-const TIMEOUT:int=25
-var timeout:int=0
+const Defaults = preload("res://Defaults.gd")
 
 var isWallrun:bool setget is_Wallrun
 export var disableWallrun:bool = false
@@ -9,6 +9,8 @@ var is_on_wall:FuncRef setget set_func_is_on_wall
 var rotatez:FuncRef setget set_func_rotatez
 var WREntry:FuncRef setget setCallbackOnWallrunEntry 
 var WRLeave:FuncRef setget setCallbackOnWallrunEntry
+
+export var TILT_ON_WALLRUN:bool = Defaults.TILT_ON_WALLRUN
 
 const TILT_AMOUNT:int = 30
 
@@ -42,16 +44,15 @@ func setCallbackOnWallrunLeave(callback):
 func NOOP():
 	pass
 func apply_wallrun()->void:
-	if timeout>0:
-		timeout-=1
 #	if !uapply:
 #		return
 	#TODO: Make the Wall always rotate down
 	var tilt_angle=TILT_AMOUNT
-	if is_on_wall.call_func() and !isWallrun and timeout<=0:
+	if !TILT_ON_WALLRUN:
+		tilt_angle=0
+	if is_on_wall.call_func() and !isWallrun:
 		rotatez.call_func(deg2rad(tilt_angle))
 		isWallrun=true
-		timeout=TIMEOUT
 		if WREntry!=null:
 			WREntry.call_func()
 	elif (!is_on_wall.call_func() and isWallrun) or disableWallrun:

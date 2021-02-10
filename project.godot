@@ -9,18 +9,42 @@
 config_version=4
 
 _global_script_classes=[ {
+"base": "SettingNode",
+"class": "BooleanValue",
+"language": "GDScript",
+"path": "res://UI/BooleanValue.gd"
+}, {
 "base": "KinematicBody",
 "class": "Player",
 "language": "GDScript",
 "path": "res://Player.gd"
 }, {
-"base": "Reference",
+"base": "Control",
+"class": "SettingNode",
+"language": "GDScript",
+"path": "res://UI/SettingNode.gd"
+}, {
+"base": "Control",
+"class": "Settings",
+"language": "GDScript",
+"path": "res://UI/Settings.gd"
+}, {
+"base": "SettingNode",
+"class": "VariableValue",
+"language": "GDScript",
+"path": "res://UI/VariableValue.gd"
+}, {
+"base": "Spatial",
 "class": "Wallrun",
 "language": "GDScript",
 "path": "res://wallrun.gd"
 } ]
 _global_script_class_icons={
+"BooleanValue": "",
 "Player": "",
+"SettingNode": "",
+"Settings": "",
+"VariableValue": "",
 "Wallrun": ""
 }
 
