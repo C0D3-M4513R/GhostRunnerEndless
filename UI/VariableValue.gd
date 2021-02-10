@@ -1,4 +1,4 @@
-extends "res://SettingNode.gd"
+extends SettingNode
 class_name VariableValue 
 
 export var sliderMin := 0
@@ -27,6 +27,9 @@ func _ready():
 	slider.connect("value_changed",self,"value_changed")
 
 #Note Here the accuracy of the actual change may not be perfect, if you think, that  
-func value_changed(value:float):
+func value_changed(value:float)->void:
 	setNodeProp(value)
 	updateLabel()
+
+func updateAction()->void:
+	getAction().set_value(getNodeProp())

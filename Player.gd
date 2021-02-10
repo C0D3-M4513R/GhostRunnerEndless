@@ -1,25 +1,27 @@
 class_name Player extends KinematicBody
 
+const Defaults = preload("res://Defaults.gd")
 
-var GRAVITY:float = -24.8*2
+var GRAVITY:float = Defaults.GRAVITY
 var vel := Vector3()
-var MAX_SPEED:int = 16
-var JUMP_SPEED :int= 16
-var ACCEL :int= 4
-var DEACCEL:int = 16
-const MAX_SLOPE_ANGLE:int = 40
+var MAX_SPEED:int = Defaults.MAX_SPEED
+var JUMP_SPEED :int= Defaults.JUMP_SPEED
+var ACCEL :int= Defaults.ACCEL
+var DEACCEL:int = Defaults.DEACCEL
+const MAX_SLOPE_ANGLE:int =Defaults.MAX_SLOPE_ANGLE
 
 #Changabale settings
-export var HORIZONTAL_SPEED_WALLRUN :int=2
-export var HORIZONTAL_SPEED_GROUND :int =1
+export var HORIZONTAL_SPEED_WALLRUN :int=Defaults.HORIZONTAL_SPEED_WALLRUN
+export var HORIZONTAL_SPEED_GROUND :int =Defaults.HORIZONTAL_SPEED_GROUND
 
-export var JUMP_COUNTER_AFTER_WALLRUN:int =2
-export var MOUSE_SENSITIVITY:float = 0.1
+export var JUMP_COUNTER_AFTER_WALLRUN:int = Defaults.JUMP_COUNTER_AFTER_WALLRUN
+export var MOUSE_SENSITIVITY:float = Defaults.MOUSE_SENSITIVITY
+var WALLRUN_DEN:float = Defaults.WALLRUN_DEN
 
 #No setting
 const Wallrun=preload("res://wallrun.gd")
 var wallrun_processor:Wallrun
-var WALLRUN_DEN:float = 2.0
+
 
 #Dynamically changing
 var walkingSpeed:int = 1
@@ -50,7 +52,7 @@ func _ready()->void:
 	settings=get_node("/root/root/UI/Settings")
 	settings.hide()
 
-	wallrun_processor=Wallrun.new()
+	wallrun_processor=$Wallrun
 	wallrun_processor.set_func_is_on_wall(funcref(self,"is_only_on_wall"))
 	wallrun_processor.set_func_rotatez(funcref(rotation_helperz,"rotate_z"))
 	wallrun_processor.setCallbackOnWallrunLeave(funcref(self,"_WallrunLeaveCallback"))
