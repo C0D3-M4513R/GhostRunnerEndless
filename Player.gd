@@ -1,12 +1,12 @@
 class_name Player extends KinematicBody
 
 
-const GRAVITY:float = -24.8*2
+var GRAVITY:float = -24.8*2
 var vel := Vector3()
-const MAX_SPEED:int = 16
-const JUMP_SPEED :int= 16
-const ACCEL :int= 4
-const DEACCEL:int = 16
+var MAX_SPEED:int = 16
+var JUMP_SPEED :int= 16
+var ACCEL :int= 4
+var DEACCEL:int = 16
 const MAX_SLOPE_ANGLE:int = 40
 
 #Changabale settings
@@ -14,16 +14,18 @@ export var HORIZONTAL_SPEED_WALLRUN :int=2
 export var HORIZONTAL_SPEED_GROUND :int =1
 
 export var JUMP_COUNTER_AFTER_WALLRUN:int =2
+export var MOUSE_SENSITIVITY:float = 0.1
 
 #No setting
 const Wallrun=preload("res://wallrun.gd")
 var wallrun_processor:Wallrun
-const WALLRUN_DEN:float = 2.0
+var WALLRUN_DEN:float = 2.0
 
 #Dynamically changing
 var walkingSpeed:int = 1
 var wallrunOrInAir :bool = false
 var jump_counter:int=0
+var settingsOpen:bool=false
 
 
 
@@ -37,8 +39,6 @@ var respawnAnchor:Spatial
 var jumpCounter:Label
 var wallrunOrInAirLabel:Label
 var settings:Control
-
-var MOUSE_SENSITIVITY:float = 0.1
 
 func _ready()->void:
 	camera = $Rotation_Helper_X/Rotation_Helper_Z/Camera
@@ -67,6 +67,19 @@ func _WallrunLeaveCallback():
 	jump_counter=JUMP_COUNTER_AFTER_WALLRUN
 
 func _physics_process(delta):
+	# ----------------------------------
+	# Capturing/Freeing the cursor
+	if Input.is_action_just_pressed("ui_cancel"):
+		if Input.get_mouse_mode() == Input.MOUSE_MODE_VISIBLE:
+			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+			settings.hide()
+			settingsOpen=false
+		else:
+			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+			settings.show()
+			settingsOpen=true
+	if settingsOpen:
+		return
 	updateUI()
 	process_input(delta)
 	process_movement(delta)
@@ -76,6 +89,7 @@ func updateUI():
 	wallrunOrInAirLabel.set_text("Wallrun or in Air: " +str(wallrunOrInAir))
 	
 func process_input(delta):
+	# ----------------------------------
 	#This is a crude respawn-machanic, but as a concept, it will work for now, because I want to concentrate on the important bits.
 	if self.get_translation().y<-50 or Input.is_action_just_pressed("respawn"):
 		reset()
@@ -131,20 +145,6 @@ func process_input(delta):
 	# Basis vectors are already normalized.
 	dir += -cam_xform.basis.z * input_movement_vector.y
 	dir += cam_xform.basis.x * input_movement_vector.x
-	# ----------------------------------
-
-
-	# ----------------------------------
-	# Capturing/Freeing the cursor
-	if Input.is_action_just_pressed("ui_cancel"):
-		if Input.get_mouse_mode() == Input.MOUSE_MODE_VISIBLE:
-			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
-			settings.hide()
-		else:
-			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
-			settings.show()
-
-			
 	# ----------------------------------
 
 func process_movement(delta):

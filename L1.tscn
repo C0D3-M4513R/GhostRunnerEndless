@@ -5,7 +5,7 @@
 [ext_resource path="res://player.tres" type="Shape" id=3]
 [ext_resource path="res://plane_shader.tres" type="Material" id=4]
 [ext_resource path="res://block_col.tres" type="Shape" id=5]
-[ext_resource path="res://UI/VariableValue.gd" type="Script" id=6]
+[ext_resource path="res://Settings.gd" type="Script" id=7]
 
 [sub_resource type="GDScript" id=1]
 script/source = "extends Spatial
@@ -197,35 +197,13 @@ __meta__ = {
 }
 
 [node name="Settings" type="Control" parent="UI"]
-margin_left = 370.891
-margin_top = 166.0
-margin_right = 672.891
-margin_bottom = 313.0
+anchor_left = 0.219
+anchor_top = 0.101
+anchor_right = 0.749
+anchor_bottom = 0.625
+margin_top = 0.399998
+margin_right = 0.0239868
+script = ExtResource( 7 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
-
-[node name="HSW" type="Control" parent="UI/Settings"]
-margin_right = 283.0
-margin_bottom = 45.0
-script = ExtResource( 6 )
-propStr = "HORIZONTAL_SPEED_WALLRUN"
-
-[node name="HSG" type="Control" parent="UI/Settings"]
-margin_left = -0.707092
-margin_top = 46.0
-margin_right = 285.293
-margin_bottom = 90.0
-script = ExtResource( 6 )
-propStr = "HORIZONTAL_SPEED_GROUND"
-
-[node name="JCAW" type="Control" parent="UI/Settings"]
-margin_left = -1.0
-margin_top = 90.0
-margin_right = 290.0
-margin_bottom = 135.0
-script = ExtResource( 6 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
-propStr = "JUMP_COUNTER_AFTER_WALLRUN"

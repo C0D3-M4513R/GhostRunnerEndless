@@ -15,12 +15,24 @@ _global_script_classes=[ {
 "path": "res://Player.gd"
 }, {
 "base": "Control",
+"class": "SettingNode",
+"language": "GDScript",
+"path": "res://SettingNode.gd"
+}, {
+"base": "Control",
+"class": "Settings",
+"language": "GDScript",
+"path": "res://Settings.gd"
+}, {
+"base": "Control",
 "class": "VariableValue",
 "language": "GDScript",
 "path": "res://UI/VariableValue.gd"
 } ]
 _global_script_class_icons={
 "Player": "",
+"SettingNode": "",
+"Settings": "",
 "VariableValue": ""
 }
 
