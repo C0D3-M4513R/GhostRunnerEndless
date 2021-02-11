@@ -3,7 +3,7 @@ class_name Wallrun
 
 const Defaults = preload("res://Defaults.gd")
 
-var isWallrun:bool setget is_Wallrun
+var isWallrun:bool setget ,is_Wallrun
 export var disableWallrun:bool = false
 var is_on_wall:FuncRef setget set_func_is_on_wall
 var rotatez:FuncRef setget set_func_rotatez
@@ -28,7 +28,7 @@ func set_func_is_on_wall(uis_on_wall) ->void:
 	is_on_wall=uis_on_wall
 	return
 
-func is_Wallrun(uWallrun:bool)->bool:
+func is_Wallrun()->bool:
 	return isWallrun
 
 func apply_wallrun()->void:

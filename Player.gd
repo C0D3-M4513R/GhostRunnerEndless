@@ -2,6 +2,7 @@ class_name Player extends KinematicBody
 
 const Defaults = preload("res://Defaults.gd")
 
+var FOV:float = Defaults.FOV
 var GRAVITY:float = Defaults.GRAVITY
 var vel := Vector3()
 var MAX_SPEED:int = Defaults.MAX_SPEED
@@ -19,6 +20,7 @@ export var MOUSE_SENSITIVITY:float = Defaults.MOUSE_SENSITIVITY
 var WALLRUN_DEN:float = Defaults.WALLRUN_DEN
 var WALLRUN_DEN_ON_WALLRUN:float = Defaults.WALLRUN_DEN_ON_WALLRUN
 var WALLRUN_VELY_DEN_ENTER:float = Defaults.WALLRUN_VELY_DEN_ENTER
+var WALLRUN_VELY_DEN_ENTER_ONLY_NEG:bool = Defaults.WALLRUN_VELY_DEN_ENTER_ONLY_NEG
 
 #No setting
 const Wallrun=preload("res://wallrun.gd")
@@ -72,10 +74,12 @@ func _WallrunLeave():
 	jump_counter=JUMP_COUNTER_AFTER_WALLRUN
 
 func _WallrunEnter():
-	if vel.y<0:
+	if !WALLRUN_VELY_DEN_ENTER_ONLY_NEG or vel.y<0:
 		vel.y/=WALLRUN_VELY_DEN_ENTER
 
 func _physics_process(delta):
+	if FOV != camera.get_fov():
+		camera.set_fov(FOV)
 	# ----------------------------------
 	# Capturing/Freeing the cursor
 	if Input.is_action_just_pressed("ui_cancel"):
@@ -102,7 +106,7 @@ func process_input(delta):
 	#This is a crude respawn-machanic, but as a concept, it will work for now, because I want to concentrate on the important bits.
 	if self.get_translation().y<-50 or Input.is_action_just_pressed("respawn"):
 		reset()
-	if wallrun_processor.is_Wallrun(0):
+	if wallrun_processor.is_Wallrun():
 		jump_counter=JUMP_COUNTER_AFTER_WALLRUN
 		
 	
@@ -114,7 +118,7 @@ func process_input(delta):
 	wallrun_processor.apply_wallrun()
 	if is_on_floor():
 		wallrunOrInAir=false
-	elif wallrun_processor.is_Wallrun(0):
+	elif wallrun_processor.is_Wallrun():
 		wallrunOrInAir=true
 	#else stay, so we get the desired effect, that this var is false, when we jumped from the ground,
 	#but true, when we leaped off of a wall
@@ -165,7 +169,7 @@ func process_movement(delta):
 	var grav:float=delta * GRAVITY 
 	if wallrunOrInAir:
 		grav/=WALLRUN_DEN
-		if wallrun_processor.is_Wallrun(0):
+		if wallrun_processor.is_Wallrun():
 			grav/=WALLRUN_DEN_ON_WALLRUN
 
 	vel.y+=grav

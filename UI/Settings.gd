@@ -11,6 +11,11 @@ func _ready():
 	add_child(reset)
 	var playerRoot:="/root/root/Player"
 	var val
+	val = VariableValue.new("FOV",playerRoot)
+	val.sliderMin=1
+	val.sliderMax=179
+	val.sliderStep=0.1
+	addSetting(val)
 	val=VariableValue.new("HORIZONTAL_SPEED_WALLRUN",playerRoot)
 	val.sliderMax=100
 	addSetting(val)
@@ -41,6 +46,8 @@ func _ready():
 	val.sliderStep=0.1
 	val.sliderMax=50
 	addSetting(val)
+	val = BooleanValue.new("WALLRUN_VELY_DEN_ENTER_ONLY_NEG",playerRoot)
+	addSetting(val)
 	val = VariableValue.new("MAX_SPEED",playerRoot)
 	val.sliderMax=100
 	addSetting(val)
@@ -65,7 +72,6 @@ func addSetting(node:SettingNode)->void:
 
 func updateChildren()->void:
 	var childCount:int= get_child_count()
-	var range_size:float=anchor_range/childCount
 	for node in get_children():
 			var childIndex:int= node.get_index()
 			node.set_anchor_and_margin(MARGIN_TOP,0,600.0*childIndex/childCount)
@@ -73,8 +79,8 @@ func updateChildren()->void:
 			node.set_anchor_and_margin(MARGIN_RIGHT,1,0)
 			node.set_anchor_and_margin(MARGIN_BOTTOM,0,600.0*childIndex/childCount)
 			
-func reset():
+func resetUI():
 	for node in get_children():
 		if node is SettingNode:
-			node.reset()
+			node.resetUI()
 
