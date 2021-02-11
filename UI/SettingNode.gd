@@ -81,10 +81,10 @@ func updateLabel()->void:
 	label.set_text(propStr + ":%s="%getPropType() +str(getNodeProp()))
 func updateAction():
 	pass
-func reset()->void:
+func resetUI()->void:
 	setNodeProp(Default.new().get(propStr))
 	updateAction()
 	updateLabel()
 func resetTrigger()->void:
-	reset()
+	resetUI()
 	reset.set_pressed(false)

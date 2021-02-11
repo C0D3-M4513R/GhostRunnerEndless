@@ -2,10 +2,12 @@ class_name Player extends KinematicBody
 
 const Defaults = preload("res://Defaults.gd")
 
+var FOV:float = Defaults.FOV
 var GRAVITY:float = Defaults.GRAVITY
 var vel := Vector3()
 var MAX_SPEED:int = Defaults.MAX_SPEED
 var JUMP_SPEED :int= Defaults.JUMP_SPEED
+var JUMP_SPEED_WALLRUN :int= Defaults.JUMP_SPEED_WALLRUN
 var ACCEL :int= Defaults.ACCEL
 var DEACCEL:int = Defaults.DEACCEL
 const MAX_SLOPE_ANGLE:int =Defaults.MAX_SLOPE_ANGLE
@@ -17,6 +19,9 @@ export var HORIZONTAL_SPEED_GROUND :int =Defaults.HORIZONTAL_SPEED_GROUND
 export var JUMP_COUNTER_AFTER_WALLRUN:int = Defaults.JUMP_COUNTER_AFTER_WALLRUN
 export var MOUSE_SENSITIVITY:float = Defaults.MOUSE_SENSITIVITY
 var WALLRUN_DEN:float = Defaults.WALLRUN_DEN
+var WALLRUN_DEN_ON_WALLRUN:float = Defaults.WALLRUN_DEN_ON_WALLRUN
+var WALLRUN_VELY_DEN_ENTER:float = Defaults.WALLRUN_VELY_DEN_ENTER
+var WALLRUN_VELY_DEN_ENTER_ONLY_NEG:bool = Defaults.WALLRUN_VELY_DEN_ENTER_ONLY_NEG
 
 #No setting
 const Wallrun=preload("res://wallrun.gd")
@@ -24,7 +29,6 @@ var wallrun_processor:Wallrun
 
 
 #Dynamically changing
-var walkingSpeed:int = 1
 var wallrunOrInAir :bool = false
 var jump_counter:int=0
 var settingsOpen:bool=false
@@ -55,7 +59,8 @@ func _ready()->void:
 	wallrun_processor=$Wallrun
 	wallrun_processor.set_func_is_on_wall(funcref(self,"is_only_on_wall"))
 	wallrun_processor.set_func_rotatez(funcref(rotation_helperz,"rotate_z"))
-	wallrun_processor.setCallbackOnWallrunLeave(funcref(self,"_WallrunLeaveCallback"))
+	wallrun_processor.connect("exit",self,"_WallrunLeave")
+	wallrun_processor.connect("enter",self,"_WallrunEnter")
 	
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 
@@ -65,10 +70,17 @@ func is_only_on_wall()->bool:
 func _get_angle_dir()->int:
 	return 0
 
-func _WallrunLeaveCallback():
+func _WallrunLeave():
 	jump_counter=JUMP_COUNTER_AFTER_WALLRUN
 
+func _WallrunEnter():
+	if !WALLRUN_VELY_DEN_ENTER_ONLY_NEG or vel.y<0:
+		vel.y/=WALLRUN_VELY_DEN_ENTER
+	wallrunOrInAir=true
+
 func _physics_process(delta):
+	if FOV != camera.get_fov():
+		camera.set_fov(FOV)
 	# ----------------------------------
 	# Capturing/Freeing the cursor
 	if Input.is_action_just_pressed("ui_cancel"):
@@ -95,7 +107,7 @@ func process_input(delta):
 	#This is a crude respawn-machanic, but as a concept, it will work for now, because I want to concentrate on the important bits.
 	if self.get_translation().y<-50 or Input.is_action_just_pressed("respawn"):
 		reset()
-	if wallrun_processor.is_Wallrun(0):
+	if wallrun_processor.is_Wallrun():
 		jump_counter=JUMP_COUNTER_AFTER_WALLRUN
 		
 	
@@ -107,8 +119,6 @@ func process_input(delta):
 	wallrun_processor.apply_wallrun()
 	if is_on_floor():
 		wallrunOrInAir=false
-	elif wallrun_processor.is_Wallrun(0):
-		wallrunOrInAir=true
 	#else stay, so we get the desired effect, that this var is false, when we jumped from the ground,
 	#but true, when we leaped off of a wall
 	
@@ -117,16 +127,15 @@ func process_input(delta):
 	if (is_on_floor() or wallrunOrInAir) and jump_counter>0:
 		if Input.is_action_just_pressed("movement_jump"):
 			jump_counter-=1
-			vel.y = JUMP_SPEED
+			if wallrunOrInAir:
+				vel.y = JUMP_SPEED_WALLRUN
+			elif is_on_floor():
+				vel.y = JUMP_SPEED
 	# ----------------------------------
 	
 	
 	# ----------------------------------
 	# Walking
-	if wallrunOrInAir:
-		walkingSpeed = HORIZONTAL_SPEED_WALLRUN
-	elif is_on_floor():
-		walkingSpeed = HORIZONTAL_SPEED_GROUND
 	
 	dir = Vector3()
 	var cam_xform := camera.get_global_transform()
@@ -134,13 +143,13 @@ func process_input(delta):
 	var input_movement_vector := Vector2()
 
 	if Input.is_action_pressed("movement_forward"):
-		input_movement_vector.y += walkingSpeed
+		input_movement_vector.y += 1
 	if Input.is_action_pressed("movement_backward"):
-		input_movement_vector.y -= walkingSpeed
+		input_movement_vector.y -= 1
 	if Input.is_action_pressed("movement_left"):
-		input_movement_vector.x -= walkingSpeed
+		input_movement_vector.x -= 1
 	if Input.is_action_pressed("movement_right"):
-		input_movement_vector.x += walkingSpeed
+		input_movement_vector.x += 1
 	
 	input_movement_vector = input_movement_vector.normalized()
 	
@@ -156,8 +165,12 @@ func process_movement(delta):
 	#This piece of code is there to slow things down, if the Player is Wallrunning,
 	# so the Player actually gets something from wallrunning
 	var grav:float=delta * GRAVITY 
-	if wallrunOrInAir:
+	if wallrunOrInAir and wallrun_processor.is_Wallrun():
+		grav/=WALLRUN_DEN_ON_WALLRUN
+	elif wallrunOrInAir and !wallrun_processor.is_Wallrun():
 		grav/=WALLRUN_DEN
+
+			
 
 	vel.y+=grav
 	
@@ -168,6 +181,8 @@ func process_movement(delta):
 	target *= MAX_SPEED
 	if wallrunOrInAir:
 		target*=HORIZONTAL_SPEED_WALLRUN
+	elif is_on_floor():
+		target*=HORIZONTAL_SPEED_GROUND
 
 	var accel:int
 	if dir.dot(hvel) > 0:
@@ -193,4 +208,3 @@ func reset():
 	jump_counter=1
 	wallrunOrInAir=false
 	vel=Vector3(0,0,0)
-	walkingSpeed=HORIZONTAL_SPEED_GROUND

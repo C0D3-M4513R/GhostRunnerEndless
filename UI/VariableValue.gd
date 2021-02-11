@@ -18,11 +18,11 @@ func _ready():
 	slider.set_anchor_and_margin(MARGIN_BOTTOM,1,0)
 
 	#Set Slider Defaults
-	slider.set_value(getNodeProp())
 	slider.set_min(sliderMin)
 	slider.set_max(sliderMax)
 	slider.set_step(sliderStep)
 	slider.set_ticks((sliderMax-sliderMin)/sliderStep+1)
+	slider.set_value(getNodeProp())
 	setAction(slider)
 	slider.connect("value_changed",self,"value_changed")
 
