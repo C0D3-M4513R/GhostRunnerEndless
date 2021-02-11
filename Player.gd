@@ -17,6 +17,7 @@ export var HORIZONTAL_SPEED_GROUND :int =Defaults.HORIZONTAL_SPEED_GROUND
 export var JUMP_COUNTER_AFTER_WALLRUN:int = Defaults.JUMP_COUNTER_AFTER_WALLRUN
 export var MOUSE_SENSITIVITY:float = Defaults.MOUSE_SENSITIVITY
 var WALLRUN_DEN:float = Defaults.WALLRUN_DEN
+var WALLRUN_DEN_ON_WALLRUN:float = Defaults.WALLRUN_DEN_ON_WALLRUN
 
 #No setting
 const Wallrun=preload("res://wallrun.gd")
@@ -158,6 +159,8 @@ func process_movement(delta):
 	var grav:float=delta * GRAVITY 
 	if wallrunOrInAir:
 		grav/=WALLRUN_DEN
+		if wallrun_processor.is_Wallrun(0):
+			grav/=WALLRUN_DEN_ON_WALLRUN
 
 	vel.y+=grav
 	
