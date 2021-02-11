@@ -18,6 +18,7 @@ export var JUMP_COUNTER_AFTER_WALLRUN:int = Defaults.JUMP_COUNTER_AFTER_WALLRUN
 export var MOUSE_SENSITIVITY:float = Defaults.MOUSE_SENSITIVITY
 var WALLRUN_DEN:float = Defaults.WALLRUN_DEN
 var WALLRUN_DEN_ON_WALLRUN:float = Defaults.WALLRUN_DEN_ON_WALLRUN
+var WALLRUN_VELY_DEN_ENTER:float = Defaults.WALLRUN_VELY_DEN_ENTER
 
 #No setting
 const Wallrun=preload("res://wallrun.gd")
@@ -56,7 +57,8 @@ func _ready()->void:
 	wallrun_processor=$Wallrun
 	wallrun_processor.set_func_is_on_wall(funcref(self,"is_only_on_wall"))
 	wallrun_processor.set_func_rotatez(funcref(rotation_helperz,"rotate_z"))
-	wallrun_processor.setCallbackOnWallrunLeave(funcref(self,"_WallrunLeaveCallback"))
+	wallrun_processor.connect("exit",self,"_WallrunLeave")
+	wallrun_processor.connect("enter",self,"_WallrunEnter")
 	
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 
@@ -66,8 +68,12 @@ func is_only_on_wall()->bool:
 func _get_angle_dir()->int:
 	return 0
 
-func _WallrunLeaveCallback():
+func _WallrunLeave():
 	jump_counter=JUMP_COUNTER_AFTER_WALLRUN
+
+func _WallrunEnter():
+	if vel.y<0:
+		vel.y/=WALLRUN_VELY_DEN_ENTER
 
 func _physics_process(delta):
 	# ----------------------------------

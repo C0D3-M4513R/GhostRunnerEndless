@@ -37,6 +37,10 @@ func _ready():
 	val.sliderStep=0.1
 	val.sliderMax=50
 	addSetting(val)
+	val = VariableValue.new("WALLRUN_VELY_DEN_ENTER",playerRoot)
+	val.sliderStep=0.1
+	val.sliderMax=50
+	addSetting(val)
 	val = VariableValue.new("MAX_SPEED",playerRoot)
 	val.sliderMax=100
 	addSetting(val)
