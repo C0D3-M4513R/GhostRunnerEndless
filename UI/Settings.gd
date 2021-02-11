@@ -54,6 +54,9 @@ func _ready():
 	val = VariableValue.new("JUMP_SPEED",playerRoot)
 	val.sliderMax=100
 	addSetting(val)
+	val = VariableValue.new("JUMP_SPEED_WALLRUN",playerRoot)
+	val.sliderMax=100
+	addSetting(val)
 	val = VariableValue.new("ACCEL",playerRoot)
 	val.sliderMax=100
 	addSetting(val)

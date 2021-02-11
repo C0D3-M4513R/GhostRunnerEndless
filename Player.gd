@@ -7,6 +7,7 @@ var GRAVITY:float = Defaults.GRAVITY
 var vel := Vector3()
 var MAX_SPEED:int = Defaults.MAX_SPEED
 var JUMP_SPEED :int= Defaults.JUMP_SPEED
+var JUMP_SPEED_WALLRUN :int= Defaults.JUMP_SPEED_WALLRUN
 var ACCEL :int= Defaults.ACCEL
 var DEACCEL:int = Defaults.DEACCEL
 const MAX_SLOPE_ANGLE:int =Defaults.MAX_SLOPE_ANGLE
@@ -126,7 +127,10 @@ func process_input(delta):
 	if (is_on_floor() or wallrunOrInAir) and jump_counter>0:
 		if Input.is_action_just_pressed("movement_jump"):
 			jump_counter-=1
-			vel.y = JUMP_SPEED
+			if wallrunOrInAir:
+				vel.y = JUMP_SPEED_WALLRUN
+			elif is_on_floor():
+				vel.y = JUMP_SPEED
 	# ----------------------------------
 	
 	
